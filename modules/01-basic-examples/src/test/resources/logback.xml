@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Define custom conversion rules -->
+    <conversionRule conversionWord="coloredDate" converterClass="ch.qos.logback.classic.pattern.DateConverter" />
+    <conversionRule conversionWord="coloredThread" converterClass="ch.qos.logback.classic.pattern.ThreadConverter" />
+    <conversionRule conversionWord="coloredLogger" converterClass="ch.qos.logback.classic.pattern.LoggerConverter" />
+
+    <!-- Define a console appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- Define the log output format with colors -->
+        <encoder>
+            <pattern>
+                %highlight(%coloredDate{HH:mm:ss.SSS}) [%highlight(%coloredThread)] %highlight(%-5level) %highlight(%coloredLogger{36}) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set the default logging level and add the appender -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

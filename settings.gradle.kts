@@ -8,3 +8,4 @@ pluginManagement {
 
 rootProject.name = "testcontainers-workshop"
 
+include(":modules:01-basic-examples")
