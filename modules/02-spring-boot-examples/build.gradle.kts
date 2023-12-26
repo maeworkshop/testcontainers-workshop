@@ -25,6 +25,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // Testcontainers deps
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
 
     // Other (Optional)
