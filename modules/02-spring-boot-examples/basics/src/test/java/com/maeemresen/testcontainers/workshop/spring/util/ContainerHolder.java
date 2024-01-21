@@ -26,21 +26,21 @@ public class ContainerHolder<T extends GenericContainer<?>> {
     }
 
     public void start() {
-        log.trace("{} is starting", name);
+        log.info("{} is starting", name);
         container.start();
-        log.debug("{} started with instance {}", name, container.getContainerId());
+        log.info("{} started with instance {}", name, container.getContainerId());
     }
 
     public void stop() {
         if (container.isCreated() || container.isRunning()) {
-            log.trace("{} has running instance with id {}. Stopping it.",
+            log.info("{} has running instance with id {}. Stopping it.",
                     name,
                     container.getContainerId());
             final var containerId = container.getContainerId();
             container.stop();
-            log.debug("{} instance stopped.", containerId);
+            log.info("{} instance stopped.", containerId);
         } else {
-            log.debug("{} has not any running instance to stop.", name);
+            log.info("{} has not any running instance to stop.", name);
         }
     }
 
