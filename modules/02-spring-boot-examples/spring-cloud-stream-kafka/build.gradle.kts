@@ -16,23 +16,31 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-dependencies {
+val springCloudVersion = "2023.0.0"
+val lombokVersion = "1.18.30"
 
-    // Spring Boot Deps
-    implementation("org.springframework.boot:spring-boot-starter")
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
+    }
+}
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-json")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.cloud:spring-cloud-stream-test-binder")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    // Testcontainers deps
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
 
-    // Other (Optional)
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-    testCompileOnly("org.projectlombok:lombok")
-    testAnnotationProcessor("org.projectlombok:lombok")
-    testImplementation("io.rest-assured:rest-assured")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
