@@ -18,6 +18,7 @@ tasks.withType<Test>().configureEach {
 
 val springCloudVersion = "2023.0.0"
 val lombokVersion = "1.18.30"
+val mapstructVersion = "1.5.5.Final"
 val awaitilityVersion = "4.1.1"
 
 dependencyManagement {
@@ -43,9 +44,10 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.awaitility:awaitility:${awaitilityVersion}")
 
-
     compileOnly("org.projectlombok:lombok:$lombokVersion")
+
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }

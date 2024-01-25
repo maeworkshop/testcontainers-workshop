@@ -1,10 +1,8 @@
 package com.maemresen.tc.spring.cloud.stream.kafka;
 
-import com.maemresen.tc.spring.cloud.stream.kafka.dto.ShoppingCartItemSaveDto;
-import com.maemresen.tc.spring.cloud.stream.kafka.dto.ShoppingCartSaveDto;
-import com.maemresen.tc.spring.cloud.stream.kafka.entity.Product;
-import com.maemresen.tc.spring.cloud.stream.kafka.message.dto.StockUpdatedMessageDto;
-import com.maemresen.tc.spring.cloud.stream.kafka.repository.ProductRepository;
+import com.maemresen.tc.spring.cloud.stream.kafka.dto.NewOrderMessageDto;
+import com.maemresen.tc.spring.cloud.stream.kafka.entity.CustomerOrder;
+import com.maemresen.tc.spring.cloud.stream.kafka.repository.CustomerOrderRepository;
 import com.maemresen.tc.spring.cloud.stream.kafka.service.OrderManagementService;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -25,12 +23,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @SpringBootTest
@@ -44,24 +40,13 @@ class ExampleIT {
     @Container
     static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.5.3.arm64"));
 
-    private static final long PRODUCT1_EXTERNAL_PRODUCT_ID = 1;
-    private static final long PRODUCT1_NEW_STOCK = 10L;
-    private static final LocalDateTime PRODUCT1_STOCK_UPDATE_TIMESTAMP = LocalDateTime.now();
-    private static final StockUpdatedMessageDto PRODUCT1_STOCK_UPDATED_MESSAGE_DTO = StockUpdatedMessageDto.builder()
-            .id(PRODUCT1_EXTERNAL_PRODUCT_ID)
-            .newStock(PRODUCT1_NEW_STOCK)
-            .updated(PRODUCT1_STOCK_UPDATE_TIMESTAMP)
-            .build();
+    public static Long CUSTOMER_ID_1 = 1L;
+    public static String ORDER_NO_1 = "ORDER_NO_1";
+    public static String PRODUCT_NAME_1 = "PRODUCT_NAME_1";
 
-    private static final long PRODUCT2_EXTERNAL_PRODUCT_ID = 1;
-    private static final long PRODUCT2_NEW_STOCK = 10L;
-    private static final LocalDateTime PRODUCT2_STOCK_UPDATE_TIMESTAMP = LocalDateTime.now();
-    private static final StockUpdatedMessageDto PRODUCT2_STOCK_UPDATED_MESSAGE_DTO = StockUpdatedMessageDto.builder()
-            .id(PRODUCT2_EXTERNAL_PRODUCT_ID)
-            .newStock(PRODUCT2_NEW_STOCK)
-            .updated(PRODUCT2_STOCK_UPDATE_TIMESTAMP)
-            .build();
-
+    public static Long CUSTOMER_ID_2 = 2L;
+    public static String ORDER_NO_2 = "ORDER_NO_2";
+    public static String PRODUCT_NAME_2 = "PRODUCT_NAME_2";
 
     @Autowired
     private InputDestination input;
@@ -73,39 +58,44 @@ class ExampleIT {
     private OrderManagementService orderManagementService;
 
     @Autowired
-    private ProductRepository productRepository;
+    private CustomerOrderRepository customerOrderRepository;
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.cloud.stream.kafka.binder.brokers", kafka::getBootstrapServers);
-//        registry.add("spring.cloud.stream.bindings.customerOrderProcessMessageConsumer-in-0.destination", () -> "customer-order-process-message");
-//        registry.add("spring.cloud.stream.bindings.customerOrderProcessMessageConsumer-in-0.group", () -> "1");
-//        registry.add("spring.cloud.stream.bindings.customerOrderProcessMessageConsumer-in-0.content-type", () -> "application/json");
     }
 
     @Test
-    void shouldUpdateProductStock() {
-        input.send(new GenericMessage<>(PRODUCT1_STOCK_UPDATED_MESSAGE_DTO), "stock-update-message");
+    void shouldSaveOrder() {
+        input.send(new GenericMessage<>(NewOrderMessageDto.builder()
+                .customerId(CUSTOMER_ID_1)
+                .orderNo(ORDER_NO_1)
+                .productName(PRODUCT_NAME_1)
+                .build()), "new-order-message");
 
         Awaitility.await().atMost(10, TimeUnit.SECONDS);
-        Optional<Product> product = productRepository.findByExternalId(PRODUCT1_EXTERNAL_PRODUCT_ID);
-        assertTrue(product.isPresent());
-        assertEquals(PRODUCT1_NEW_STOCK, product.get().getStock());
+        boolean customerExists = customerOrderRepository.findAll().stream()
+                .anyMatch(customerOrder -> customerOrder.getCustomerId().equals(CUSTOMER_ID_1) &&
+                        customerOrder.getOrderNo().equals(ORDER_NO_1) &&
+                        customerOrder.getProductName().equals(PRODUCT_NAME_1) &&
+                        customerOrder.getStatus().equals("PENDING"));
+        assertTrue(customerExists);
     }
 
     @Test
     void shouldCreateCreateShoppingCart() {
         final long orderCount = 1L;
-        orderManagementService.updateProductStock(PRODUCT2_STOCK_UPDATED_MESSAGE_DTO);
-        orderManagementService.createShoppingCart(ShoppingCartSaveDto.builder()
-                .username("maemresen")
-                .shoppingCartItems(List.of(ShoppingCartItemSaveDto.builder()
-                        .productId(PRODUCT2_EXTERNAL_PRODUCT_ID)
-                        .productCount(orderCount)
-                        .build()))
-                .build());
+
+        final CustomerOrder customerOrder = orderManagementService.saveOrder
+                (NewOrderMessageDto.builder()
+                        .customerId(CUSTOMER_ID_2)
+                        .orderNo(ORDER_NO_2)
+                        .productName(PRODUCT_NAME_2)
+                        .build());
+        orderManagementService.processOrder(customerOrder.getId());
         Awaitility.await().atMost(5, TimeUnit.SECONDS);
-        final Message<byte[]> orderProcessMessageDto = this.output.receive(10 * 1000, "customer-order-process-message");
+        final Message<byte[]> orderProcessMessageDto = this.output.receive(10 * 1000, "order-process-message");
         assertNotNull(orderProcessMessageDto);
+        System.out.println(new String(orderProcessMessageDto.getPayload()));
     }
 }
