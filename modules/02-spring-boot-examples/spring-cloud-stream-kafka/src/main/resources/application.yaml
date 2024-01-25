@@ -19,7 +19,10 @@ spring:
         binder:
           brokers: localhost:9093
       bindings:
-        eventConsumer-in-0:
-          destination: sample-message-topic
+        customerOrderProcessMessageProducer-out-0:
+          destination: customer-order-process-message
+          content-type: application/json
+        stockUpdateMessageConsumer-in-0:
+          destination: stock-update-message
           group: 1
           content-type: application/json
