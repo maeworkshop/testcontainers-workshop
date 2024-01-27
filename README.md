@@ -6,13 +6,13 @@ Welcome to the Testcontainers Workshop Repository! This repository is dedicated 
 ## Prerequisites
 Before you start, ensure you have the following installed:
 - [JDK 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
-- [Gradle 8.5](https://gradle.org/releases/)
+- [Maven 3.8](https://maven.apache.org/download.cgi) (or higher)
 - [Docker](https://www.docker.com/get-started) (for running Testcontainers)
 
 ## Setting Up
 1. **Clone the Repository**: Clone this repository to your local machine using `git clone`.
 2. **Configure Docker**: Ensure Docker is running on your system as Testcontainers will need it to create and manage containers.
-3. **Install Dependencies**: Run `gradle build` to install the necessary dependencies.
+3. **Install Dependencies**: Run `mvn install` to install the necessary dependencies.
 
 ## Workshop Modules
 This workshop includes the following modules:
@@ -22,4 +22,4 @@ This workshop includes the following modules:
 ## Running the Examples
 To run the examples in each module:
 1. Navigate to the specific module directory (`01-basic-examples` or `02-spring-boot-examples`).
-2. Execute the tests using `gradle test`.
+2. Execute the tests using `mvn test`.
