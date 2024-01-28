@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>com.maemresen</groupId>
-    <artifactId>spring-boot-basics</artifactId>
+    <artifactId>spring-boot-postgres</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

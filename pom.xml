@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>01-basic-examples</module>
-        <module>02-spring-boot-examples</module>
+        <module>testcontainers-basics</module>
+        <module>spring-boot-examples</module>
     </modules>
 </project>
