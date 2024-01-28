@@ -15,14 +15,9 @@ public class CustomerOrder {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "customer_id")
-    private Long customerId;
-
     @Column(name = "order_id")
     private String orderNo;
 
     @Column(name = "product_name")
     private String productName;
-
-    private String status;
 }

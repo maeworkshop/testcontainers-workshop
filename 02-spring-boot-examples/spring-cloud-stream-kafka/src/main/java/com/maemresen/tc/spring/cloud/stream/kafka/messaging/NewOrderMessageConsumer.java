@@ -1,7 +1,7 @@
-package com.maemresen.tc.spring.cloud.stream.kafka.messaging.consumer;
+package com.maemresen.tc.spring.cloud.stream.kafka.messaging;
 
-import com.maemresen.tc.spring.cloud.stream.kafka.dto.NewOrderMessageDto;
-import com.maemresen.tc.spring.cloud.stream.kafka.service.OrderManagementService;
+import com.maemresen.tc.spring.cloud.stream.kafka.dto.messaging.NewOrderMessageDto;
+import com.maemresen.tc.spring.cloud.stream.kafka.service.CustomerOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 @Component
 public class NewOrderMessageConsumer implements Consumer<NewOrderMessageDto> {
 
-    private final OrderManagementService orderManagementService;
+    private final CustomerOrderService customerOrderService;
 
     @Override
     public void accept(final NewOrderMessageDto newOrderMessageDto) {
-        orderManagementService.saveOrder(newOrderMessageDto);
+        customerOrderService.saveOrder(newOrderMessageDto);
     }
 }
