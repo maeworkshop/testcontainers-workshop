@@ -7,6 +7,8 @@ import com.maemresen.tc.spring.cloud.stream.kafka.repository.CustomerOrderReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class CustomerOrderService {
@@ -14,8 +16,8 @@ public class CustomerOrderService {
     private final CustomerOrderRepository customerOrderRepository;
     private final NewOrderMessageProducer newOrderMessageProducer;
 
-    public void createOrder(final String orderNo, final String productName) {
-        newOrderMessageProducer.publish(NewOrderMessageDto.newBuilder()
+    public boolean createOrder(final String orderNo, final String productName) {
+        return newOrderMessageProducer.publish(NewOrderMessageDto.newBuilder()
                 .setOrderNo(orderNo)
                 .setProductName(productName)
                 .build());
@@ -26,5 +28,9 @@ public class CustomerOrderService {
                 .orderNo(newOrderMessageDto.getOrderNo())
                 .productName(newOrderMessageDto.getProductName())
                 .build());
+    }
+
+    public Optional<CustomerOrder> findByOrderNo(final String orderNo) {
+        return customerOrderRepository.findByOrderNo(orderNo);
     }
 }

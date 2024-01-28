@@ -11,7 +11,7 @@ public class NewOrderMessageProducer {
 
     private final StreamBridge streamBridge;
 
-    public void publish(final NewOrderMessageDto newOrderMessageDto) {
-        streamBridge.send("newOrderMessageConsumer-out-0", newOrderMessageDto);
+    public boolean publish(final NewOrderMessageDto newOrderMessageDto) {
+        return streamBridge.send("newOrderMessageProducer-out-0", newOrderMessageDto);
     }
 }

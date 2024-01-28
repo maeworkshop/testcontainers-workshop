@@ -15,7 +15,7 @@ public class CustomerOrder {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(name = "order_id")
+    @Column(name = "order_no", unique = true)
     private String orderNo;
 
     @Column(name = "product_name")
