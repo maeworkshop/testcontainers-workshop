@@ -1,4 +1,4 @@
-name: Gradle CI
+name: Maven CI
 
 on:
   workflow_dispatch:
@@ -11,9 +11,9 @@ on:
 
 env:
   JAVA_VERSION: 21
-  GRADLE_VERSION: '8.5'  # Adjust if you want a different Gradle version
-  CACHE_KEY: gradle-local-repo
-  GRADLE_TASKS: build  # Define your Gradle tasks here
+  MAVEN_VERSION: '3.8'  # Adjust if you want a different Maven version
+  CACHE_KEY: maven-local-repo
+  MAVEN_TASKS: clean test  # Define your Maven tasks here
 
 jobs:
   build:
@@ -28,21 +28,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.JAVA_VERSION }}
+          cache: 'maven'
 
-      - name: Install Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: ${{ env.GRADLE_VERSION }}
-
-      - name: Cache Gradle packages
+      - name: Cache Maven packages
         uses: actions/cache@v2
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ env.CACHE_KEY }}-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+            ~/.m2/repository
+          key: ${{ env.CACHE_KEY }}-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_KEY }}-${{ runner.os }}-
 
-      - name: Gradle Build
-        run: gradle ${{ env.GRADLE_TASKS }}
+      - name: Maven Build
+        run: mvn ${{ env.MAVEN_TASKS }}

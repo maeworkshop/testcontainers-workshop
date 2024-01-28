@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "NewOrderMessageDto",
+  "namespace": "com.maemresen.tc.spring.cloud.stream.kafka.dto.messaging",
+  "fields": [
+    {
+      "name": "orderNo",
+      "type": "string"
+    },
+    {
+      "name": "productName",
+      "type": "string"
+    }
+  ]
+}
