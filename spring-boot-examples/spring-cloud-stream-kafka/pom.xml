@@ -19,7 +19,7 @@
         <java.version>21</java.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <avro.version>1.11.3</avro.version>
-        <confluent.version>7.5.1</confluent.version>
+        <confluent.version>7.5.3</confluent.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <rest-assured.version>5.2.0</rest-assured.version> <!-- Replace with your desired version -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -53,6 +53,7 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- Spring Boot starters for core functionality -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -65,15 +66,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <!-- Database driver for PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
 
+        <!-- Spring Cloud Stream for Kafka messaging -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-binder-kafka</artifactId>
+            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
         </dependency>
+
+        <!-- Serialization and schema registry for Kafka -->
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
@@ -100,24 +106,26 @@
             <version>${confluent.version}</version>
         </dependency>
 
+        <!-- Code simplification library -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!-- Testing dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-test-binder</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-stream-test-binder</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

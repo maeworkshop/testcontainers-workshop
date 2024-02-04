@@ -1,7 +1,7 @@
 package com.maemresen.tc.spring.cloud.stream.kafka;
 
+import com.maemresen.tc.spring.cloud.stream.kafka.entity.CustomerOrder;
 import com.maemresen.tc.spring.cloud.stream.kafka.service.CustomerOrderService;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,9 +14,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Testcontainers
 @SpringBootTest
@@ -31,7 +33,7 @@ class CustomerOrderServiceIT {
 
     public static String PRODUCT_NAME = "PRODUCT_NAME_1";
 
-    public static String ORDER_NO = "ORDER_NO_1";
+    public static String ORDER_NO_1 = "ORDER_NO_1";
 
     @Autowired
     private CustomerOrderService customerOrderService;
@@ -43,10 +45,17 @@ class CustomerOrderServiceIT {
 
     @Test
     void shouldSaveOrder() {
-        boolean result = customerOrderService.createOrder(ORDER_NO, PRODUCT_NAME);
-        Awaitility.await().atMost(10, TimeUnit.SECONDS);
+        boolean result = customerOrderService.createOrder(ORDER_NO_1, PRODUCT_NAME);
+        assertThrows(Exception.class, () -> customerOrderService.createOrder(ORDER_NO_1, PRODUCT_NAME));
+        await().atMost(1, TimeUnit.SECONDS).untilAsserted(() -> {
+            assertTrue(result, "Expected the message to be published successfully, but it was not.");
 
-        assertTrue(result, "Expected the message to be published successfully, but it was not.");
-        assertTrue(customerOrderService.findByOrderNo(ORDER_NO).isPresent(), "Expected to find an order with Order No: " + ORDER_NO + ", but no such order was saved.");
+            final List<CustomerOrder> createdCustomers = customerOrderService.findAll();
+            assertEquals(1, createdCustomers.size(), "Expected only one order has been created.");
+
+            final CustomerOrder customerOrder = createdCustomers.getFirst();
+            assertEquals(ORDER_NO_1, customerOrder.getOrderNo());
+            assertEquals(PRODUCT_NAME, customerOrder.getProductName());
+        });
     }
 }

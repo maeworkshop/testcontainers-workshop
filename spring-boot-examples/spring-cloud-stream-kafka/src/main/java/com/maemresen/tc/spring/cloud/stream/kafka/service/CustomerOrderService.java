@@ -7,7 +7,7 @@ import com.maemresen.tc.spring.cloud.stream.kafka.repository.CustomerOrderReposi
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -17,6 +17,10 @@ public class CustomerOrderService {
     private final NewOrderMessageProducer newOrderMessageProducer;
 
     public boolean createOrder(final String orderNo, final String productName) {
+        if (existsByOrderNo(orderNo)) {
+            throw new IllegalArgumentException("Order No must be unique");
+        }
+
         return newOrderMessageProducer.publish(NewOrderMessageDto.newBuilder()
                 .setOrderNo(orderNo)
                 .setProductName(productName)
@@ -30,7 +34,12 @@ public class CustomerOrderService {
                 .build());
     }
 
-    public Optional<CustomerOrder> findByOrderNo(final String orderNo) {
-        return customerOrderRepository.findByOrderNo(orderNo);
+    public boolean existsByOrderNo(final String orderNo) {
+        return customerOrderRepository.existsByOrderNo(orderNo);
     }
+
+    public List<CustomerOrder> findAll() {
+        return customerOrderRepository.findAll();
+    }
+
 }
